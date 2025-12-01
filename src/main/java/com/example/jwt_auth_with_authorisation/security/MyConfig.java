@@ -1,11 +1,13 @@
 package com.example.jwt_auth_with_authorisation.security;
 
 import com.example.jwt_auth_with_authorisation.JWTUtil.JWTUtil;
+import com.example.jwt_auth_with_authorisation.entity.Permissions;
 import com.example.jwt_auth_with_authorisation.filter.JWTAuthFilter;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -30,6 +32,8 @@ public class MyConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf ->csrf.disable())
                 .authorizeHttpRequests(auth->auth.requestMatchers("/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/security/**")
+                        .hasAuthority(Permissions.USER_WRITE.name())
                         .requestMatchers("/security/**").hasRole("USER")
                         .anyRequest().authenticated()
                 );
